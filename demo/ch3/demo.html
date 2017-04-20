@@ -29,8 +29,10 @@
     你的站点上动态渲染的任意 HTML 可能会非常危险，因为它很容易导致 XSS 攻击。请只对可信内容使用 HTML 插值，绝不要对用户提供的内容插值。-->
     <div id="test2" v-html="html">
     </div>
+    或者
+    <div id="test2" v-html="">{{html}}</div>
 
-    <!--属性：Mustache 不能在 HTML 属性中使用，应使用 v-bind 指令：-->
+    <!--属性：Mustache({{}}) 不能在 HTML 属性中使用，应使用 v-bind 指令：-->
     <div id="test3">
         <div :id="sub">123</div>
     </div>
@@ -50,6 +52,8 @@
         {{str.split('').reverse().join('')}} <br>
         <div v-bind:id="'list-'+id">son</div>
         <p v-if="ok">Now you see me</p>
+        <input v-model="xxx"/> 
+                <!-- v-model 表单元素双向数据绑定 相当于绑定value -->
     </div>
     <a id="test6" :href="url">
         百度一下
@@ -63,6 +67,7 @@
     例如，.prevent 修饰符告诉 v-on 指令对于触发的事件调用 event.preventDefault()：-->
     <div id="test8">
         <form action="/xxx" method="get" @submit.prevent="onSubmit">
+            <button disabled="disabled">按钮</button>
             <button type="submit">提交</button>
         </form>
     </div>
