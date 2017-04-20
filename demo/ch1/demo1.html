@@ -71,13 +71,17 @@
 				}
 			}
 		});
-		var myData = {
+		var myData = {  // 只要这个内存地址
 			str: '两只老虎跑得快'
 		}
 		var app6 = new Vue({
 			el: '#test6',
-			data: myData 
+			data: myData // 引用这个内存地址
 		});
+		// 相当于如下
+		function fn() { // 本身没值
+			return myData.str // 返回myData的
+		}
 	</script>
 </body>
 </html>
