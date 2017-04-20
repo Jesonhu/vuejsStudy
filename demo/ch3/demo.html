@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/vue.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+    <style>
+        #sub{
+            color:red;
+        }
+    </style>
+</head>
+<body>
+    <!--
+    Vue.js 使用了基于 HTML 的模版语法，允许开发者声明式地将 DOM 绑定至底层 Vue 实例的数据。
+    所有 Vue.js 的模板都是合法的 HTML ，所以能被遵循规范的浏览器和 HTML 解析器解析。
+    在底层的实现上， Vue 将模板编译成虚拟 DOM 渲染函数。
+    结合响应系统，在应用状态改变时， Vue 能够智能地计算出重新渲染组件的最小代价并应用到 DOM 操作上。
+    如果你熟悉虚拟 DOM 并且偏爱 JavaScript 的原始力量，你也可以不用模板，直接写渲染（render）函数，使用可选的 JSX 语法。
+    -->
+    <!--插入文本“Mustache” 语法（双大括号）的文本插值。v-once内容改变后不更新,该节点都被影响了-->
+    <div id="test1">
+        {{str}}
+        <p v-once>{{str}}</p>
+    </div>
+
+    <!--输出html
+    你的站点上动态渲染的任意 HTML 可能会非常危险，因为它很容易导致 XSS 攻击。请只对可信内容使用 HTML 插值，绝不要对用户提供的内容插值。-->
+    <div id="test2" v-html="html">
+    </div>
+
+    <!--属性：Mustache 不能在 HTML 属性中使用，应使用 v-bind 指令：-->
+    <div id="test3">
+        <div :id="sub">123</div>
+    </div>
+
+    <!--对布尔值的属性也有效 —— 如果条件求值为 false 该属性会被移除-->
+    <div id="test4">
+        <button :disabled="canopt">按钮</button>
+    </div>
+
+    <!--使用-JavaScript-表达式-->
+    <!--指令（Directives）是带有 v- 前缀的特殊属性。指令属性的值预期是单一 JavaScript 表达式（除了 v-for，之后再讨论）。
+    指令的职责就是当其表达式的值改变时,相应地将某些行为应用到 DOM 上。-->
+    <!--一些指令能接受一个“参数”，在指令后以冒号指明 v-bind:href="url"-->
+    <div id="test5">
+        {{number+1}} <br>
+        {{ok?'yes':'no'}} <br>
+        {{str.split('').reverse().join('')}} <br>
+        <div v-bind:id="'list-'+id">son</div>
+        <p v-if="ok">Now you see me</p>
+    </div>
+    <a id="test6" :href="url">
+        百度一下
+    </a>
+
+    <div id="test7">
+        <button @click="clickMe">点击</button>
+    </div>
+
+    <!--修饰符（Modifiers）是以半角句号 . 指明的特殊后缀，用于指出一个指令应该以特殊方式绑定。
+    例如，.prevent 修饰符告诉 v-on 指令对于触发的事件调用 event.preventDefault()：-->
+    <div id="test8">
+        <form action="/xxx" method="get" @submit.prevent="onSubmit">
+            <button type="submit">提交</button>
+        </form>
+    </div>
+
+    <!--Vue.js 允许你自定义过滤器，可被用作一些常见的文本格式化。
+    过滤器可以用在两个地方：mustache 插值和 v-bind 表达式。过滤器应该被添加在 JavaScript 表达式的尾部，由“管道”符指示
+    过滤器函数总接受表达式的值作为第一个参数。这里，字符串 'arg1' 将传给过滤器作为第二个参数， arg2 表达式的值将被求值然后传给过滤器作为第三个参数。
+    v-on:click="doSomething" @click="doSomething" -->
+    <div id="test9">
+        {{str | firstUpper | lastUpper}} <br>
+        <div :id="str | uppercase">33</div>
+        {{str | uppercase}} <br>
+        {{str | isUppercase(false,arg1,arg2)}}
+    </div>
+
+    <script>
+        var app1 = new Vue({
+            el: '#test1',
+            data: {
+                str: '你好'
+            }
+        });
+
+        let app2 = new Vue({
+            el: '#test2',
+            data: {
+                html: '<h2><span>你好</span><h2>'
+            }
+        });
+
+        let app3 = new Vue({
+            el: '#test3',
+            data: {
+                sub: 'sub'
+            }
+        });
+
+        let app4 = new Vue({
+            el: '#test4',
+            data: {
+                canopt: false
+            }
+        });
+
+        let app5 = new Vue({
+            el: '#test5',
+            data: {
+                number: 1,
+                ok: true,
+                str: 'hello Vuejs',
+                id: 'son'
+            }
+        });
+
+        let app6 = new Vue({
+            el: '#test6',
+            data: {
+                url: 'http://www.baidu.com'
+            }
+        });
+
+        let app7 = new Vue({
+            el: '#test7',
+            methods: {
+                clickMe: function () {
+                    alert('hello world Vuejs');
+                }
+            }
+        });
+
+        let app8 = new Vue({
+           el: '#test8',
+        });
+
+        let app9 = new Vue({
+            'el': '#test9',
+            data: {
+                str: 'jesonhu'
+            },
+            filters: {
+                firstUpper: function (value) {  //自定义首字母大写函数
+                    if(!value) return ''; //value不存在返回''
+                    value = value.toString();
+                    return value.charAt(0).toUpperCase()+value.slice(1);
+                        //value.charAt(0).toUpperCase() 取得value字符串索引为0的字符并大写
+                        //value.slice(1) 除首位之后该字符串剩下的部分
+                },
+                lastUpper: function (value) { //自定义末尾字母大写函数
+                    if(!value) return ''; //value不存在返回''
+                    value = value.toString();
+                    let len = value.length;
+                    return value.slice(0,(len-1)) + value.charAt(len-1).toUpperCase();
+                },
+                uppercase: function (value) {  //自定义字符大写函数
+                    if(!value) return ''; //value不存在返回''
+                    value = value.toString();
+                    let newStr = '';
+                    for(let i=0;i<value.length;i++){
+                        newStr += value.charAt(i).toUpperCase();
+                    }
+                    value = newStr;
+                    return value;
+                },
+                isUppercase: function (value, bool) {  //自定义是否字符大写函数
+                    //默认第一个参数为筛选器的值 筛选器传递的第一个实参会作为过滤方法的第二个形参，以此对应
+                    if(!value) return ''; //value不存在返回''
+                    value = value.toString();
+                    let newStr = '';
+                    if(bool){
+                        for(let i=0;i<value.length;i++){
+                            newStr += value.charAt(i).toUpperCase();
+                        }
+                        value = newStr;
+                    }
+                    return value;
+                }
+            }
+        })
+    </script>
+</body>
+</html>

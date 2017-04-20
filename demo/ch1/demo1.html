@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="../../js/vue.min.js"></script>
+	<script src="../../js/jquery.min.js"></script>
+</head>
+<body>
+	<div id="test">
+		{{str}}
+	</div>
+	<div id="test2">
+		<span v-bind:title="str">鼠标悬停显示内容</span>
+	</div>
+	<div id="test3">
+		<p v-if="seen">现在可以看到我</p>
+	</div>
+	<div id="test4">
+		<ul>
+			<li v-for="person in persons">{{person.name}}</li>
+		</ul>
+	</div>
+	<div id="test5">
+		<p>{{str}}</p>
+		<button v-on:click="reverseStr">逆转显示</button>
+	</div>
+	<div id="test6">
+		<p>{{str}}</p>
+		<input type="text" v-model="str">
+	</div>
+	<script>
+		var app = new Vue({
+			el: '#test',
+			data: {
+				str: 'hello world vuejs'
+			}
+		});
+		var app2 = new Vue({
+			el: '#test2',
+			data: {
+				str: '页面加载于'+ new Date()
+			}
+		});
+		var app3 = new Vue({
+			el: '#test3',
+			data: {
+				seen: true
+			}
+		});
+		var app4 = new Vue({
+			el: '#test4',
+			data: {
+				persons: [{
+					name: '张三'
+				},{
+					name: '李四'
+				},{
+					name: '王二麻子'
+				}]
+			}
+		});
+		var app5 = new Vue({
+			el: '#test5',
+			data: {
+				str: 'hello world Vue.js'
+			},
+			methods: {
+				reverseStr: function () {
+					this.str = this.str.split('').reverse().join('');
+				}
+			}
+		});
+		var myData = {
+			str: '两只老虎跑得快'
+		}
+		var app6 = new Vue({
+			el: '#test6',
+			data: myData
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>小demo</title>
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <script src="../../js/vue0.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+</head>
+<body>
+    <div id="app">
+
+        <fieldset>
+            <legend>
+                添加新用户
+            </legend>
+            <div class="form-group">
+                <label>姓名:</label>
+                <input type="text" v-model="newPerson.name"/>
+            </div>
+            <div class="form-group">
+                <label>年龄:</label>
+                <input type="text" v-model="newPerson.age"/>
+            </div>
+            <div class="form-group">
+                <label>性别:</label>
+                <select v-model="newPerson.sex">
+                    <option value="男" selected = "selected">男</option>
+                    <option value="女">女</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label></label>
+                <button @click="createPerson">添加</button>
+            </div>
+        </fieldset>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>姓名</th>
+                <th>年龄</th>
+                <th>性别</th>
+                <th>删除</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="person in people">
+                <td>{{ person.name }}</td>
+                <td>{{ person.age }}</td>
+                <td>{{ person.sex }}</td>
+                <td :class="'text-center'"><button @click="deletePerson($index)">删除</button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                newPerson: {
+                    name: '',
+                    age: 0,
+                    sex: '男'
+                },
+                people: [{
+                    name: '张三',
+                    age: 30,
+                    sex: '男'
+                }, {
+                    name: '李四',
+                    age: 26,
+                    sex: '男'
+                }, {
+                    name: '王五',
+                    age: 22,
+                    sex: '女'
+                }, {
+                    name: '赵六',
+                    age: 36,
+                    sex: '男'
+                }]
+            },
+            methods: {
+                createPerson: function () {
+                    this.people.push(this.newPerson);
+                    //添加完newPerson对象后，重置newPerson对象
+                    this.newPerson = {name:'',age:'',sex:'男'}
+                },
+                deletePerson: function (index) {
+                    this.people.splice(index,1);
+                }
+            }
+        })
+    </script>
+</body>
+</html>

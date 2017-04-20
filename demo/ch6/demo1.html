@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/vue.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+</head>
+<body>
+    <h1 class="h1" v-if="ok">yes</h1>
+
+    <h2 class="h1" v-if="ok">yes</h2>
+    <span v-else>no</span>
+
+    <!--组件 v-if-->
+    <div id="t1" v-if="ok">
+        <h1>Title</h1>
+        <p>段落1</p>
+        <p>段落2</p>
+
+
+
+    <div v-if="Math.random() > 0.5">随机数小于0.5</div>
+    <div v-else>大于等于0.5</div>
+
+    </div>
+
+    <script>
+        var  app1 = new Vue({
+            el: '.h1',
+            data: {
+                ok: true
+            }
+        });
+
+        var template = new Vue({
+            el: '#t1',
+            data: {
+                ok: true
+            }
+        })
+    </script>
+</body>
+</html>

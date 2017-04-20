@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用key管理可复用的组件</title>
+    <script src="../../js/vue.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+</head>
+<body>
+    <!--Vue 会尽可能高效地渲染元素，通常会复用已有元素而不是从头开始渲染。
+    这么做，除了使 Vue 变得非常快之外，还有一些有用的好处。例如，如果你允许用户在不同的登录方式之间切换:-->
+    <div id="test1">
+        <div v-if="loginType === true">
+            <label>Username</label>
+            <input placeholder="Enter your username">
+        </div>
+        <div v-else>
+            <label>Email</label>
+            <input placeholder="Enter your email address">
+        </div>
+        <button @click="toggleLoginType">切换登录类型</button>
+    </div>
+
+    <!--Vue 为你提供了一种方式来声明“这两个元素是完全独立的——不要复用它们”。只需添加一个具有唯一值的 key 属性即可
+    <label> 元素仍然会被高效地复用，因为它们没有添加 key 属性。-->
+    <div id="test2">
+        <div v-if="loginType === true">
+            <label>Username</label>
+            <input placeholder="Enter your username" key="username-input">
+        </div>
+        <div v-else>
+            <label>Email</label>
+            <input placeholder="Enter your email address" key="email-input">
+        </div>
+        <button @click="toggleLoginType">切换登录类型</button>
+    </div>
+
+    <script>
+        let vm1 = new Vue({
+            el: '#test1',
+            data: {
+                loginType: true
+            },
+            methods: {
+                toggleLoginType: function () {
+                    this.loginType = !this.loginType;
+                }
+            }
+        });
+        let vm2 = new Vue({
+            el: '#test2',
+            data: {
+                loginType: true
+            },
+            methods: {
+                toggleLoginType: function () {
+                    this.loginType = !this.loginType;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

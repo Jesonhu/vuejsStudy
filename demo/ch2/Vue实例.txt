@@ -1,0 +1,59 @@
+Vue 实例
+1  每个Vue.js都是通过创建一个Vue的根实例启动的
+   var vm = new Vue({})
+
+2 扩展Vue构造器，用预定义选项创建可复用的组件构造器
+   var MyComponent = Vue.extend({
+        //扩展选项
+   })
+   //所有的 MyComponent 实例都将以预定义的扩展选项被创建
+   var myComponentInstance = new MyComponent()
+
+3 属性与方法
+ 3.1 每个Vue实例都会代理data对象里所有的属性
+         var data = {a:1},
+         vm = new Vue({
+             data: data
+         });
+         console.log(vm.a === data.a); //true
+         //设置属性也会影响到原始数据
+         vm.a = 2;
+         console.log(data.a);
+         data.a = 3;
+         console.log(vm.a);
+
+ 3.2 只有这些被代理的属性是响应的，如果实例被创建后添加新的属性到实例上
+     ，它不会触发视图更新
+
+ 3.3 除了data属性，Vue实例暴露了一些有用的实例属性和方法
+     这些都有前缀$,以便与代理的data属性区分
+     var data1 = {a:1},
+         vm = new Vue({
+             el: '#test',
+             data: data1,
+         });
+         console.log(vm.$data === data);
+         console.log(vm.$el === document.getElementsById('test'));
+
+         //$watch是一个实例方法
+         vm.$watch('a', function (newVal, oldVal) {
+            //这个回调将在 vm.a改变后调用
+         });
+
+ 4 实例生命周期
+    4.1 每个 Vue 实例在被创建之前都要经过一系列的初始化过程。
+        例如，实例需要配置数据观测(data observer)、编译模版、挂载实例到 DOM ，
+        然后在数据变化时更新 DOM 。在这个过程中，实例也会调用一些 生命周期钩子 ，这就给我们提供了执行自定义逻辑的机会。
+        例如，created 这个钩子在实例被创建之后被调用：
+      var vm = new Vue({
+            data: {
+                a: 1
+            },
+            created: function () {
+                //this指向 vm实例
+                console.log('a is:'+this.a);
+            }
+        });
+
+    4.2 也有一些其它的钩子，在实例生命周期的不同阶段调用，如 mounted、 updated 、destroyed 。钩子的 this 指向调用它的 Vue 实例。
+

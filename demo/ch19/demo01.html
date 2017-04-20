@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/vue.min.js"></script>
+</head>
+<body>
+    <!--官方路由****************************
+        对于大多数单页面应用，都推荐使用官方支持的vue-router库。
+    -->
+
+    <!--从零开始简单的路由****************************
+        如果只需要非常简单的路由而不需要引入整个路由库，可以动态渲染一个页面级的组件像这样
+    -->
+    <div id="app"></div>
+
+    <script>
+        const NotFound = {template:'<p>Page not found</p>'},
+              Home = { template: '<p>home page</p>'},
+              About = { template: '<p>about page</p>' };
+
+        let routers = {
+            '/': Home,
+            '/about': About
+        }
+        new Vue({
+            el: '#app',
+            data: {
+                currentRoute: window.location.pathname
+            },
+            computed: {
+                ViewComponent() {
+                    return routes[this.currentRoute] || NotFound; //
+                }
+            },
+            render(h) {
+                return h(this.ViewComponent); // h 即creatElement
+            }
+        });
+    </script>
+</body>
+</html>

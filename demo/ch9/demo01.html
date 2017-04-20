@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/vue.min.js"></script>
+</head>
+<body>
+    <!--表单控件绑定-->
+    <!-- v-model
+     你可以用 v-model 指令在表单控件元素上创建双向数据绑定。它会根据控件类型自动选取正确的方法来更新元素。
+     尽管有些神奇，但 v-model 本质上不过是语法糖，它负责监听用户的输入事件以更新数据，并特别处理一些极端的例子。
+     v-model 并不关心表单控件初始化所生成的值。因为它会选择 Vue 实例数据来作为具体的值。
+     对于要求 IME （如中文、 日语、 韩语等） 的语言，你会发现那v-model不会在 ime 构成中得到更新。如果你也想实现更新，请使用 input事件。-->
+
+
+    <!--文本-->
+    <div id="test1">
+        <input type="text" v-model="message" placeholder="请输入内容">
+        <p>输入内容为:{{message}}</p>
+    </div>
+
+    <!--多行文本
+    在文本区域插值( <textarea></textarea> ) 并不会生效，应用 v-model 来代替-->
+    <div id="test2">
+        <textarea v-model="message" cols="30" rows="5" @keyup="aliveLength"></textarea>
+        <p style="white-space: nowrap">输入内容为:{{message}}</p>
+        <p>还可再输入{{length}}个字符</p>
+    </div>
+
+    <!--复选框
+    单个勾选-->
+    <div id="test3">
+        <input type="checkbox" v-model="checked">
+        <label for="">{{checked}}</label>
+    </div>
+    <!--多个勾选框，绑定到同一个数组：-->
+    <div id="test4">
+        <input type="checkbox" value="张三" v-model="checkedNames">
+        <label for="">张三</label>
+        <input type="checkbox" value="李四" v-model="checkedNames">
+        <label for="">李四</label>
+        <input type="checkbox" value="王五sss" v-model="checkedNames">
+        <label for="">王五</label> <br>
+        <span>选了：{{checkedNames}}</span>
+    </div>
+
+    <!--单选按钮
+    -->
+    <div id="test5">
+        <input type="radio" value="男" v-model="sex">
+        <label for="">男</label>
+        <input type="radio" value="女" v-model="sex">
+        <label for="">女</label> <br>
+        性别:{{sex}}
+    </div>
+
+    <!--选择列表
+    单选列表-->
+    <div id="test6">
+        <select v-model="selected">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+        </select>
+        <span>选择:{{selected}}</span>
+    </div>
+    <!--多选列表-->
+    <div id="test7">
+        <select v-model="selected" multiple="multiple" style="width:50px">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+        </select>
+        <span>选择:{{selected}}</span>
+    </div>
+    <!-- 动态选项 v-for渲染 -->
+    <div id="test8">
+        <select name="" id="" v-model="selected">
+            <option v-for="option in options" :value="option.value">{{option.text}}</option>
+        </select>
+    </div>
+
+    <!-- 绑定value
+    对于单选按钮，勾选框及选择列表选项， v-model 绑定的 value 通常是静态字符串（对于勾选框是逻辑值）：
+    -->
+    <!-- 当选中时，`picked` 为字符串 "a" -->
+    <input type="radio" v-model="picked" value="a">
+    <!-- `toggle` 为 true 或 false -->
+    <input type="checkbox" v-model="toggle">
+    <!-- 当选中时，`selected` 为字符串 "abc" -->
+    <select v-model="selected">
+        <option value="abc">ABC</option>
+    </select>
+
+    <!-- 但是有时我们想绑定 value 到 Vue 实例的一个动态属性上，这时可以用 v-bind 实现，并且这个属性的值可以不是字符串。 -->
+    <!--复选框-->
+    <div id="test9">
+        <input
+           type="checkbox"
+           v-model="toggle"
+           :true-value="aaa"
+           :false-value="bbb"
+        > <br>
+        {{toggle}}
+    </div>
+    <!--单选按钮-->
+    <div id="test10">
+        <input type="radio" v-model="sex" :value="a"> <br>
+        {{sex}}
+    </div>
+
+    <!--选择列表设置-->
+    <div id="test11">
+        <select v-model="selected">
+            <!-- 内联对象字面量 -->
+            <option :value="{number:123}">123</option>
+        </select>
+    </div>
+    <!--
+    // 当选中时
+    typeof vm11.selected // -> 'object'
+    vm11.selected.number // -> 123
+    -->
+
+    <!-- 修饰符 -->
+    <!-- .lazy
+     在默认情况下， v-model 在 input 事件中同步输入框的值与数据 (除了 上述 IME 部分)，
+     但你可以添加一个修饰符 lazy ，从而转变为在 change 事件中同步：
+     在 "change" 而不是 "input" 事件中更新
+     <input v-model.lazy="msg" >
+    -->
+    <!-- .number
+     如果想自动将用户的输入值转为 Number 类型（如果原值的转换结果为 NaN 则返回原值），可以添加一个修饰符 number 给 v-model 来处理输入值：
+     <input v-model.number="age" type="number">
+     这通常很有用，因为在 type="number" 时 HTML 中输入的值也总是会返回字符串类型。
+     -->
+    <div id="test12">
+        <input v-model.number="age"> {{age}} <br>
+        <input v-model.number="age" type="number"> {{age}}
+    </div>
+
+    <!-- .trim
+         如果要自动过滤用户输入的首尾空格，可以添加 trim 修饰符到 v-model 上过滤输入：
+    -->
+    <div id="test13">
+        <input type="text" v-model.trim="hello"> {{hello}}
+    </div>
+
+    <script>
+        let vm1 = new Vue({
+           el: '#test1',
+           data: {
+               message: ''
+           }
+        });
+
+        new Vue({
+            el: '#test2',
+            data: {
+                message: '',
+                length: 200
+            },
+            computed: {
+                aliveLength() {
+                    this.length -= this.message.length;
+                }
+            }
+        });
+
+        new Vue({
+           el: '#test3',
+           data: {
+               checked: false
+           }
+        });
+
+        new Vue({
+            el: '#test4',
+            data: {
+                checkedNames: []
+            }
+        });
+
+        new Vue({
+            el: '#test5',
+            data: {
+                sex: '男'
+            }
+        });
+
+        new Vue({
+            el: '#test6',
+            data: {
+                selected: null
+            }
+        });
+
+        new Vue({
+            el: '#test7',
+            data: {
+                selected: []
+            }
+        });
+
+        new Vue({
+            el: '#test8',
+            data: {
+                selected: null,
+                options: [
+                    {text: 'A', value: 'As'},
+                    {text: 'B', value: 'Bs'},
+                    {text: 'C', value: 'Cs'}
+                ]
+            }
+        });
+
+        new Vue({
+            el: '#test9',
+            data: {
+                aaa: '选择',
+                bbb: '未选择',
+                toggle: ''
+            }
+        });
+
+        new Vue({
+            el: '#test10',
+            data: {
+                sex: '选择了男',
+                a: '选择男'
+            }
+        });
+
+        let vm11 = new Vue({
+            el: '#test11',
+            data: {
+                selected: '11'
+            }
+        });
+
+        new Vue({
+            el: '#test12',
+            data: {
+                age: '25'
+            }
+        });
+
+        new Vue({
+            el: '#test13',
+            data: {
+                hello: ''
+            }
+        });
+    </script>
+</body>
+</html>

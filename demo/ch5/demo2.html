@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>绑定内联样式</title>
+    <script src="../../js/vue.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+    <style>
+        #test4{
+            background-color: #8a6d3b;
+            color:#fff;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!--绑定内联样式-->
+    <!--对象语法-->
+    <!--v-bind:style 的对象语法十分直观——看着非常像 CSS ，其实它是一个 JavaScript 对象。
+    CSS 属性名可以用驼峰式（camelCase）或短横分隔命名（kebab-case）-->
+    <div id="test1" :style="{color:aC, fontSize: fz+'px'}">123</div>
+
+    <!--直接绑定到一个样式对象通常更好，让模板更清晰-->
+    <div id="test2" :style="styleObj">456</div>
+
+    <!--数组语法-->
+    <!--数组语法可以将多个样式对象应用到一个元素上-->
+    <div id="test3" :style="[baseStyles, overridingStyles]">789</div>
+
+    <!--自动添加前缀？？？？-->
+    <!--v-bind:style 使用需要特定前缀的 CSS 属性时，如 transform ，Vue.js 会自动侦测并添加相应的前缀。-->
+    <div id="test4" :style="{transform:value}">abc</div>
+
+    <script>
+        var app1 = new Vue({
+            el: '#test1',
+            data: {
+                aC: 'red',
+                fz: 16
+            }
+        });
+
+        var app2 = new Vue({
+            el: '#test2',
+            data: {
+                styleObj: {
+                    fontSize: '16px',
+                    color: 'red',
+                    fontWeight: 'bold'
+                }
+            }
+        });
+
+        var app3 = new Vue({
+            el: '#test3',
+            data: {
+                baseStyles: {
+                    fontSize: '16px',
+                    fontWeight: 'bold'
+                },
+                overridingStyles: {
+                    cursor: 'pointer'
+                }
+            }
+        });
+
+        var app4 = new Vue({
+            el: '#test4',
+            data: {
+                value: 'rotate(7deg)'
+            }
+        })
+    </script>
+</body>
+</html>

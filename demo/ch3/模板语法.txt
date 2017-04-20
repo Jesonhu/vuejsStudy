@@ -1,0 +1,205 @@
+1 1 模板语法
+  Vue.js 使用了基于 HTML 的模版语法，允许开发者声明式地将 DOM 绑定至底层 Vue 实例的数据。
+  所有 Vue.js 的模板都是合法的 HTML ，所以能被遵循规范的浏览器和 HTML 解析器解析。
+
+  在底层的实现上， Vue 将模板编译成虚拟 DOM 渲染函数。结合响应系统，在应用状态改变时，
+  Vue 能够智能地计算出重新渲染组件的最小代价并应用到 DOM 操作上。
+
+  如果你熟悉虚拟 DOM 并且偏爱 JavaScript 的原始力量，你也可以不用模板，
+  直接写渲染（render）函数，使用可选的 JSX 语法（语法糖写的xml语法通过jsx转换工具变成js代码）。
+
+2 2 插值
+  2.1 插入文本
+      2.1.1 数据绑定的常用形式: 使用'Mustache'语法（{{}}）双大括号 插入文本数据
+        <div id="test1">{{str}}</div>
+
+        <script>
+            var app1 = new Vue({
+                el: '#test1',
+                data: {
+                    str: '你好'
+                }
+            })
+        </script>
+
+        //console修改数据
+        app1.str = '123' // 内容随着改变
+
+      2.1.2 v-once指令也可以执行 一次性 的插值，当数据改变的时候，内容不会更新
+          <div id="test1">
+              {{str}}
+              <p v-once>{{str}}</p>
+          </div>
+
+          //console修改数据
+          app1.str = '123'; //v-once标签外部{{}}绑定的发生内容变化 v-once节点里面的不会变化
+
+  2.2 插入纯html
+     2.2.1 输出html使用 v-html
+        <div id="test2" v-html="html">
+            <p>{{html}}</p>
+        </div>
+
+        let app2 = new Vue({
+                el: '#test2',
+                data: {
+                    html: '<h2><span>你好</span><h2>'
+                }
+            });
+
+     2.2.2 被插入的内容都会被当做 HTML —— 数据绑定会被忽略。
+           注意，你不能使用 v-html 来复合局部模板，因为 Vue 不是基于字符串的模板引擎。
+           组件更适合担任 UI 重用与复合的基本单元。
+
+     2.2.3 你的站点上动态渲染的任意 HTML 可能会非常危险，因为它很容易导致 XSS 攻击。
+           请只对可信内容使用 HTML 插值，绝不要对用户提供的内容插值。
+
+  2.3 插入属性
+           2.3.1 Mustache({{}}) 不能在 HTML 属性中使用，应使用 v-bind 指令
+                <style>
+                    #sub{
+                        color:red;
+                    }
+                </style>
+                <div id="test3">
+                    <div :id="sub">123</div>
+                </div>
+                let app3 = new Vue({
+                        el: '#test3',
+                        data: {
+                            sub: 'sub'
+                        }
+                    });
+
+           2.3.2 这对布尔值的属性也有效 —— 如果条件被求值为 false 的话该属性会被移除：
+                <div id="test4">
+                    <button :disabled="canopt">按钮</button>
+                </div>
+                let app4 = new Vue({
+                        el: '#test4',
+                        data: {
+                            canopt: true
+                        }
+                    })
+
+  2.4 使用js表达式
+        2.4.1
+        <div id="test5">
+                {{number+1}} <br>
+                {{ok?'yes':'no'}} <br>
+                {{str.split('').reverse().join('')}} <br>
+                <div :id="'list-'+id">son</div>
+            </div>
+
+            let app5 = new Vue({
+                        el: '#test5',
+                        data: {
+                            number: 1,
+                            ok: true,
+                            str: 'hello Vuejs',
+                            id: 'son'
+                        }
+                    });
+
+        2.4.2 这些表达式会在所属 Vue 实例的数据作用域下作为 JavaScript 被解析。
+              有个限制就是，每个绑定都只能包含单个表达式，所以下面的例子都不会生效。
+
+              <!-- 这是语句，不是表达式 -->
+              {{ var a = 1 }}
+              <!-- 流控制也不会生效，请使用三元表达式 -->
+              {{ if (ok) { return message } }}
+
+        2.4.3 模板表达式都被放在沙盒中，只能访问全局变量的一个白名单，如 Math 和 Date 。
+              你不应该在模板表达式中试图访问用户定义的全局变量。
+
+  2.5 参数 一些指令能接受一个“参数”，在指令后以冒号指明
+     2.5.1 例如， v-bind 指令被用来响应地更新 HTML 属性：
+        <a id="test6" :href="url">
+                百度一下
+        </a>
+
+        let app6 = new Vue({
+                    el: '#test6',
+                    data: {
+                        url: 'http://www.baidu.com'
+                    }
+                })
+        在这里 href 是参数，告知 v-bind 指令将该元素的 href 属性与表达式 url 的值绑定。
+
+     2.5.2  v-on 指令，它用于监听 DOM 事件 参数是监听的事件名
+        <div id="test7">
+                <button @click="clickMe">点击</button> //@ v-on:的简写
+        </div>
+        let app7 = new Vue({
+                    el: '#test7',
+                    methods: {
+                        clickMe: function () {
+                            alert('hello world Vuejs');
+                        }
+                    }
+                });
+
+  2.6 修饰符（Modifiers）是以半角句号 . 指明的特殊后缀，用于指出一个指令应该以特殊方式绑定。
+      2.6.1例如，.prevent 修饰符告诉 v-on 指令对于触发的事件调用 event.preventDefault()：
+
+      <div id="test8">
+              <form action="/xxx" method="get" @submit.prevent="onSubmit">
+                  <button type="submit">提交</button>
+              </form>
+      </div>
+      let app8 = new Vue({
+                 el: '#test8',
+      });
+
+  2.7 过滤器
+      Vue.js 允许你自定义过滤器，可被用作一些常见的文本格式化。
+      过滤器可以用在两个地方：mustache({{}}) 插值和 v-bind 表达式。
+      <div id="test9">
+              {{str | firstUpper | lastUpper}} <br>
+              {{str | uppercase}} <br>
+              {{str | isUppercase(false)}}
+          </div>
+      let app9 = new Vue({
+                  'el': '#test9',
+                  data: {
+                      str: 'jesonhu'
+                  },
+                  filters: {
+                      firstUpper: function (value) {  //自定义首字母大写函数
+                          if(!value) return ''; //value不存在返回''
+                          value = value.toString();
+                          return value.charAt(0).toUpperCase()+value.slice(1);
+                              //value.charAt(0).toUpperCase() 取得value字符串索引为0的字符并大写
+                              //value.slice(1) 除首位之后该字符串剩下的部分
+                      },
+                      lastUpper: function (value) { //自定义末尾字母大写函数
+                          if(!value) return ''; //value不存在返回''
+                          value = value.toString();
+                          let len = value.length;
+                          return value.slice(0,(len-2)) + value.charAt(len-1).toUpperCase();
+                      },
+                      uppercase: function (value) {  //自定义字符大写函数
+                          if(!value) return ''; //value不存在返回''
+                          value = value.toString();
+                          let newStr = '';
+                          for(let i=0;i<value.length;i++){
+                              newStr += value.charAt(i).toUpperCase();
+                          }
+                          value = newStr;
+                          return value;
+                      },
+                      isUppercase: function (value, bool) {  //自定义是否字符大写函数
+                          //默认第一个参数为筛选器的值 筛选器传递的第一个实参会作为过滤方法的第二个形参，以此对应
+                          if(!value) return ''; //value不存在返回''
+                          value = value.toString();
+                          let newStr = '';
+                          if(bool){
+                              for(let i=0;i<value.length;i++){
+                                  newStr += value.charAt(i).toUpperCase();
+                              }
+                              value = newStr;
+                          }
+                          return value;
+                      }
+                  }
+              })

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>v-bind高亮显示当前页</title>
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <script src="../../js/vue.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <ul class="pagination">
+            <li v-for="n in pageCount" v-bind:class="activeNumber === n?'active':''">
+                <a href="">{{n}}</a>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                activeNumber: 1,
+                pageCount: 10
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/vue.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+    <style>
+        .active{
+            color:red;
+        }
+        .text-danger{
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!--绑定html class 对象语法
+    我们可以传给 v-bind:class 一个对象，以动态地切换 class 。
+    active 的更新将取决于数据属性 isActive 是否为真值 。-->
+    <div id="test1" :class="{active: isActive}">123</div>
+
+    <!--我们也可以在对象中传入更多属性用来动态切换多个 class 。此外， v-bind:class 指令可以与普通的 class 属性共存-->
+    <div id="test2" class="static" :class="{active:isActive,'text-danger':hasError}">456</div>
+
+    <!--我们也可以在这里绑定返回对象的计算属性。这是一个常用且强大的模式-->
+    <div id="test3" :class="classObject">789</div>
+
+    <!--也可以直接绑定数据里的一个对象-->
+    <div id="test4" class="static" :class="classObject">101112</div>
+
+    <!--数组语法-->
+    <!--可以把一个数组传给 v-bind:class ，以应用一个 class 列表  -->
+    <div id="test5" class="static" :class="[activeClass, errorClass]">abc</div>
+
+    <!--根据条件切换列表中的 class ，可以用三元表达式-->
+    <div id="test6" class="static" :class="[isActive?active:'',errorClass]">def</div>
+
+    <!--当有多个条件 class 时这样写有些繁琐。可以在数组语法中使用对象语法-->
+    <div id="test7" class="static" :class="[{active:isActive}, errorClass]">ghi</div>
+
+    <!--用在组件上-->
+    <!--当你在一个定制的组件上用到 class 属性的时候，这些类将被添加到根元素上面，这个元素上已经存在的类不会被覆盖。-->
+    <div id="test8">
+        <my-component class="static"></my-component>
+        <my-component1 class="static" :class="{'text-danger': isError}"></my-component1>
+    </div>
+
+    <script>
+        let app1 = new Vue({
+            el: '#test1',
+            data: {
+                isActive: true
+            }
+        });
+
+        let app2 = new Vue({
+            el: '#test2',
+            data: {
+                isActive: true,
+                hasError: false
+            }
+        });
+
+        let app3 = new Vue({
+            el: '#test3',
+            data: {
+                isActive: true,
+                hasError: null,
+            },
+            computed: {
+                classObject: function () {
+                    return {
+                        active: this.isActive && !this.hasError, //&& 与找假 两个都要满足
+                        'text-danger': this.hasError && this.hasError.type === 'fatal'
+                    }
+                }
+            }
+        });
+
+        let app4 = new Vue({
+            el: '#test4',
+            data: {
+                classObject: {
+                    active: true,
+                    'text-danger': false
+                }
+            }
+        });
+
+        let app5 = new Vue({
+            el: '#test5',
+            data: {
+                activeClass: 'active',
+                errorClass: 'text-danger'
+            }
+        });
+
+        let app6 = new Vue({
+            el: '#test6',
+            data: {
+                isActive: true,
+                active: 'active',
+                errorClass: 'text-danger'
+            }
+        });
+
+        let app7 = new Vue({
+            el: '#test7',
+            data: {
+                isActive: true,
+                errorClass: 'text-danger'
+            }
+        });
+
+        Vue.component('my-component', {
+           template: '<p class="active">晚上好</p>'
+        });
+        Vue.component('my-component1', {
+            template: '<p>晚上好</p>'
+        });
+        let app8 = new Vue({
+            el: '#test8',
+            data: {
+                isError: true
+            }
+        });
+    </script>
+</body>
+</html>

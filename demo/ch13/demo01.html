@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/vue.min.js"></script>
+    <script src="https://unpkg.com/tween.js@16.3.4"></script>
+    <script src="https://unpkg.com/color-js@1.0.3/color.js"></script>
+    <style>
+        .example-7-color-preview {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <!--过渡状态-->
+    <!--
+    Vue 的过渡系统提供了非常多简单的方法设置进入、离开和列表的动效。那么对于数据元素本身的动效呢，比如：
+    数字和运算
+    颜色的显示
+    SVG 节点的位置
+    元素的大小和其他的属性
+    所有的原始数字都被事先存储起来，可以直接转换到数字。做到这一步，我们就可以结合 Vue 的响应式和组件系统，使用第三方库来实现切换元素的过渡状态。
+    -->
+
+    <!--
+    状态动画 与 watcher
+    通过 watcher 我们能监听到任何数值属性的数值更新
+    -->
+    <div id="test1">
+        <input type="text" v-model.number="number" type="number" step="20">
+        <p>{{animatedNumber}}</p>
+    </div>
+
+    <!--对于不能直接像数字一样存储的值，比如 CSS 中的 color 的值-->
+    <div id="example-7">
+        <input
+            v-model="colorQuery"
+            v-on:keyup.enter="updateColor"
+            placeholder="Enter a color"
+        >
+        <button v-on:click="updateColor">更新</button>
+        <p>Preview:</p>
+          <span
+              v-bind:style="{ backgroundColor: tweenedCSSColor }"
+              class="example-7-color-preview"
+          ></span>
+        <p>{{ tweenedCSSColor }}</p>
+    </div>
+
+    <!--
+    通过组件组织过渡
+    管理太多的状态转换会很快的增加 Vue 实例或者组件的复杂性，幸好很多的动画可以提取到专用的子组件
+    -->
+    <div id="test2">
+        <input type="number" v-model.number="firstNumber" step="20"> +
+        <input type="number" v-model.number="secondNumber" step="20"> =
+        {{result}}
+        <p>
+            <animated-integer :value="firstNumber"></animated-integer> +
+            <animated-integer :value="secondNumber"></animated-integer> =
+            <animated-integer :value="result"></animated-integer>
+        </p>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#test1',
+            data: {
+                number: 0,
+                animatedNumber: 0
+            },
+            watch: {
+                number(newVal, oldVal) { // 监听number的变化
+                    var vm = this;
+                    function animate(time) {
+                        requestAnimationFrame(animate);
+                        TWEEN.update(time);
+                    };
+                    new TWEEN.Tween({ tweeningNumber: oldVal })
+                            .easing(TWEEN.Easing.Quadratic.Out)
+                            .to({ tweeningNumber: newVal }, 500)
+                            .onUpdate(function () {
+                                vm.animatedNumber = this.tweeningNumber.toFixed(0)
+                            })
+                            .start()
+                    animate();
+                }
+            }
+        });
+
+        var Color = net.brehaut.Color
+        new Vue({
+            el: '#example-7',
+            data: {
+                colorQuery: '',
+                color: {
+                    red: 0,
+                    green: 0,
+                    blue: 0,
+                    alpha: 1
+                },
+                tweenedColor: {}
+            },
+            created: function () { // vue对象实例化就会执行
+                this.tweenedColor = Object.assign({}, this.color);
+                    // 将实例 color的属性复制一份保存到tweenedColor中
+            },
+            watch: {
+                color: function () {
+                    function animate (time) {
+                        requestAnimationFrame(animate)
+                        TWEEN.update(time)
+                    }
+                    new TWEEN.Tween(this.tweenedColor)// 改变 tweenedColor的值 并保存到this.color中
+                            .to(this.color, 750)
+                            .start()
+                    animate()
+                }
+            },
+            computed: {
+                tweenedCSSColor: function () {
+                    return new Color({
+                        red: this.tweenedColor.red,
+                        green: this.tweenedColor.green,
+                        blue: this.tweenedColor.blue,
+                        alpha: this.tweenedColor.alpha
+                    }).toCSS()
+                }
+            },
+            methods: {
+                updateColor: function () {
+                    this.color = new Color(this.colorQuery).toRGB()
+                    this.colorQuery = ''
+                }
+            }
+        });
+
+        Vue.component('animated-integer', {
+           template: '<span>{{tweeningValue}}</span>',
+            props: {
+                value: { // 接收传递过来值
+                    type: Number, // 数组类型
+                    required: true // 不能为空
+                }
+            },
+            data() {
+                return {
+                    tweeningValue: 0
+                }
+            },
+            watch: {
+                value(newVal, oldVal) { // 监测 this.value的变化
+                    this.tween(oldVal, newVal);
+                }
+            },
+            mounted() { // ???
+              this.tween(0, this.value);
+            },
+            methods: {
+                tween(startVal, endVal) {
+                    var vm = this
+                    function animate (time) {
+                        requestAnimationFrame(animate)
+                        TWEEN.update(time)
+                    }
+                    new TWEEN.Tween({ tweeningValue: startVal })
+                            .to({ tweeningValue: endVal }, 500)
+                            .onUpdate(function () {
+                                vm.tweeningValue = this.tweeningValue.toFixed(0)
+                            })
+                            .start()
+                    animate()
+                }
+            }
+        });
+        new Vue({
+           el: '#test2',
+           data: {
+               firstNumber: 0,
+               secondNumber: 0
+           },
+           computed: {
+               result() {
+                   return this.firstNumber + this.secondNumber;
+               }
+           }
+        });
+    </script>
+</body>
+</html>

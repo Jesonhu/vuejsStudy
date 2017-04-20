@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>v-else</title>
+    <script src="../../js/vue.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <h2 v-if="age >= 25">Age: {{age}}</h2>
+        <h2 v-else>Name: {{name}}</h2>
+        <h2>---------------------------------------------------</h2>
+        <h2 v-show="name.indexOf('keep') >= 0">Name: {{name}}</h2>
+        <h2 v-else>Sex:{{sex}}</h2>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                age: 28,
+                name: 'offkeep',
+                sex: 'Male'
+            }
+        });
+
+    </script>
+</body>
+</html>

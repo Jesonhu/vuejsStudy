@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue实例</title>
+    <script src="../../js/vue.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+</head>
+<body>
+    <div id="test">vm</div>
+
+    <div id="test1">vm1</div>
+
+    <div class="test2">vm2 <span>{{a}}</span></div>
+    <script>
+        /*在实例化 Vue 时，需要传入一个选项对象
+         每个 Vue 实例都会代理其 data 对象里所有的属性
+        * 注意只有这些被代理的属性是响应的。如果在实例创建之后添加新的属性到实例上，它不会触发视图更新*/
+        var data = {a:1},
+            vm = new Vue({
+                data: data
+            });
+            console.log(vm.a === data.a); //true
+            //设置属性也会影响到原始数据
+            vm.a = 2;
+            console.log(data.a); // 2
+            data.a = 3;
+            console.log(vm.a); // 3
+
+        // 除了 data 属性， Vue 实例暴露了一些有用的实例属性与方法。这些属性与方法都有前缀 $，以便与代理的 data 属性区分
+        var data1 = {a:1,b:2},
+            vm1 = new Vue({
+                el: '#test1',
+                data: data1,
+            });
+            console.log(vm1.$data === data1); // true
+            console.log(vm1.$el === document.getElementById('test1')); // true
+            // $watch是一个实例方法。不要在实例属性或者回调函数中（如 vm.$watch('a', newVal => this.myMethod())）使用箭头函数。
+            // 因为箭头函数绑定父上下文，所以 this 不会像预想的一样是 Vue 实例，而是 this.myMethod 未被定义。
+            // 控制台改变 vm1.a
+            vm1.$watch('a', function (newVal, oldVal) {
+               //这个回调将在 vm.a改变后调用
+                console.log('我在$watch里面 a被改变为'+newVal +' to '+ oldVal);
+                console.log(this === vm1 ); // true
+            });
+            vm1.$watch('b', (newVal, oldVal) => {
+                //这个回调将在 vm.a改变后调用
+                console.log('我在$watch里面 b被改变为'+newVal +' to '+ oldVal);
+                console.log(this === vm1 ); // false
+            });
+
+        /*
+        * 每个 Vue 实例在被创建之前都要经过一系列的初始化过程。例如，实例需要配置数据观测(data observer)、编译模版、挂载实例到 DOM ，然后在数据变化时更新 DOM 。
+        * 在这个过程中，实例也会调用一些 生命周期钩子 ，这就给我们提供了执行自定义逻辑的机会。例如，created 这个钩子在实例被创建之后被调用
+        * 也有一些其它的钩子，在实例生命周期的不同阶段调用，如 mounted、 updated 、destroyed 。钩子的 this 指向调用它的 Vue 实例。*/
+        var vm2 = new Vue({
+            el: '.test2',
+            data: {
+                a: 1,
+                b: 2
+            },
+            created() {
+                //this指向 vm实例
+                //console.log('我在created里面 a is:'+this.a); // dom被加载后就就执行
+                console.log('created');
+            },
+            beforeCreate() {
+                console.log('beforeCreate'); // 实例被创建之前就执行
+            },
+            beforeMount() {
+                console.log('beforeMount');
+            },
+            mounted() {
+                console.log('mounted');
+            },
+            beforeUpdate() {
+                console.log('beforeUpdate'); // dom更新前执行
+            },
+            updated() {
+                console.log('updated'); // dom 更新后执行
+            },
+            beforeDestroy() {
+                console.log('beforeDestroy');
+            },
+            destroyed() {
+                console.log('destroyed');
+            }
+        });
+    </script>
+</body>
+</html>

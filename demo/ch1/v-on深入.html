@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>v-on</title>
+    <script src="../../js/vue.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <p><input type="text" v-model="str"></p>
+        <p>
+            <!--click事件直接绑定一个方法-->
+            <button v-on:click="greet">Greet</button>
+        </p>
+        <p>
+            <!--click事件使用内联语句-->
+            <button v-on:click="say('hi')">hi</button>
+        </p>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                str: '你好 vue.js'
+            },
+            methods: {
+                greet: function () {
+                    alert(this.str);
+                },
+                say: function (msg) {
+                    alert(msg);
+                }
+            }
+        })
+    </script>
+</body>
+</html>

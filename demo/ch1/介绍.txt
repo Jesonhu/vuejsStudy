@@ -1,0 +1,96 @@
+1 hello world
+  引入vue.min.js 代码：
+        <div id="test">
+    		{{str}}
+    	</div>
+    	<script>
+    		var app = new Vue({
+    			el: '#test',
+    			data: {
+    				str: 'hello world vuejs'
+    			}
+    		});
+    	</script>
+2 v-bind 指令(v-)
+    v-bind:title='str'
+    绑定到title,title显示的时候就会触发
+
+3 条件与循环
+  条件 v-if="表达式的结果" 结果为真显示否则隐藏
+  循环 v-for 同for() 数据源为data的值
+
+4 事件监听 v-on 代码展示
+    <div id="test5">
+        <p>{{str}}</p>
+        <button v-on:click="reverseStr">逆转显示</button>
+    </div>
+
+    var app5 = new Vue({
+            el: '#test5',
+            data: {
+                str: 'hello world Vue.js'
+            },
+            methods: {
+                reverseStr: function () {
+                    this.str = this.str.split('').reverse().join('');
+                }
+            }
+        });
+
+5 v-model 使表单输入和应用状态间双向绑定 同ng-model
+    <div id="test6">
+        <p>{{str}}</p>
+        <input type="text" v-model="str">
+    </div>
+    var app6 = new Vue({
+            el: '#test6',
+            data: {
+                str: '两只老虎跑得快'
+            }
+        });
+
+6 vue.js内置的指令
+        v-if 条件渲染指令
+        v-show 条件渲染指令 指令的元素始终会被渲染到html,这是简单的为元素设置style属性
+        v-else
+        可以为v-if或v-show添加一个'else块'，必须跟在其后面
+        v-else的元素是否显示取决于前面是v-if还是v-show v-if为true v-else不会渲染到dom v-show为true或false  v-else都不会渲染到html
+        v-for 遍历数组 xx in xx
+        v-bind 语法：v-bind:argument='expression'
+                    argument表示html元素的特性如(attribute) 或 v-bind:class 可以高亮当前页 可缩写为:一个冒号
+        v-on 语法与v-bind类似 监听dom事件
+                    调用方法：1 绑定一个方法名（让事件指向方法的引用）2 使用内联语句（执行方法） 可缩写为：@符合
+
+6 应用组件化 --用小型，自包含和可以复用的组件构建大型应用
+        <div id="test">
+            <my-component></my-component>
+        </div>
+        <script>
+            Vue.component('my-component',{
+               template: '<h1>原来是个h1</h1>'
+            });
+            var app = new Vue({
+                el: '#test',
+            })
+        </script>
+
+        <div id="test">
+            <my-component v-for="item in groceryList" :todo="item"></my-component>
+        </div>
+        <script>
+            Vue.component('my-component',{
+                //组件现在接收一个 'prop'类属于一个自定义属性属性名为todo
+                props: ['todo'],
+                template: '<h2>{{todo.text}}</h2>'
+            });
+            var app = new Vue({
+                el: '#test',
+                data: {
+                    groceryList: [
+                        { text: '蔬菜' },
+                        { text: '奶酪' },
+                        { text: '随便其他什么人吃的东西' }
+                    ]
+                }
+            })
+        </script>

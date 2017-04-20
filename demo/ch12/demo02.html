@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>列表的过渡</title>
+    <script src="../../js/vue.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+    <style>
+        .list-item{
+            display: inline-block;
+            margin-right: 10px;
+            transition: all 1s;
+        }
+        .list-enter-active, .list-leave-active{
+            transition: all 1s;
+        }
+        .list-enter, .list-leave-active{
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .list2-item{
+            transition: all 1s;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .list-good-enter, .list-good-leave-active {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        .list-good-leave-active {
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <!--
+    列表过渡****************************
+    目前为止，关于过渡我们已经讲到：
+    单个节点
+    同一时间渲染多个节点中的一个
+    那么怎么同时渲染整个列表，比如使用 v-for ？在这种场景中，使用 <transition-group> 组件。在我们深入例子之前，先了解关于这个组件的几个特点：
+    不同于 <transition>， 它会以一个真实元素呈现：默认为一个 <span>。你也可以通过 tag 特性更换为其他元素。tag父元素
+    内部元素 总是需要 提供唯一的 key 属性值
+    -->
+
+    <div id="test1" class="demo">
+        <button @click="add">添加</button>
+        <button @click="remove">删除</button>
+        <transition-group name="list" tag="p">
+            <span v-for="item in items" :key="item" class="list-item">
+              {{ item }}
+            </span>
+        </transition-group>
+    </div>
+
+    <!--列表的位移过渡********************** xxx-leave-active设为绝对定位
+    -->
+    <div id="test2" class="demo">
+        <button @click="add">添加</button>
+        <button @click="remove">删除</button>
+        <transition-group name="list-good" tag="p">
+            <span v-for="item in items" :key="item" class="list2-item">
+              {{ item }}
+            </span>
+        </transition-group>
+    </div>
+
+    <!--列表的渐进式过渡*************** 引入velocity.js
+
+    -->
+    <div id="test3">
+        <input type="text" v-model="query">
+        <transition-group
+                name="stagg-fade"
+                tag="ul"
+                :css="false"
+                @before-enter="beforeEnter"
+                @enter="enter"
+                @leave="leave"
+        >
+            <li
+               v-for="(item,index) in computedItems"
+               :key="item.msg"
+               :data-index="index"
+            >{{item.msg}}</li>
+        </transition-group>
+    </div>
+
+    <!--可复用组件**************************推荐方法
+    Vue.component('my-special-transition', {
+      functional: true,
+      render: function (createElement, context) {
+        var data = {
+          props: {
+            name: 'very-special-transition',
+            mode: 'out-in'
+          },
+          on: {
+            beforeEnter: function (el) {
+              // ...
+            },
+            afterEnter: function (el) {
+              // ...
+            }
+          }
+        }
+        return createElement('transition', data, context.children)
+      }
+    })
+    -->
+
+    <!--
+        动态过渡
+
+        在 Vue 中即使是过渡也是数据驱动的！动态过渡最基本的例子是通过 name 特性来绑定动态值。
+        <transition v-bind:name="transitionName">
+
+        </transition>
+        当你想用 Vue 的过渡系统来定义的 CSS 过渡/动画 在不同过渡间切换会非常有用。
+        所有的过渡特性都是动态绑定。它不仅是简单的特性，通过事件的钩子函数方法，可以在获取到相应上下文数据。
+        这意味着，可以根据组件的状态通过 JavaScript 过渡设置不同的过渡效果。
+        最后，创建动态过渡的最终方案是组件通过接受 props 来动态修改之前的过渡。一句老话，唯一的限制是你的想象力
+    -->
+
+
+    <script>
+        /* @click="delete" 不能用关键字delete */
+        new Vue({
+            el: '#test1',
+            data: {
+                items: [1,2,3,4,5,6,7,8,9],
+                nextNum: 10
+            },
+            methods: {
+                randomIndex() {         // 0.9*9 = 8
+                    return Math.floor(Math.random() * this.items.length); // 位置随机
+                },
+                add() {
+                    this.items.splice(this.randomIndex(), 0, this.nextNum++); // 随机添加一个进来
+                },
+                remove() {
+                    this.items.splice(this.randomIndex(), 1) // 随机删除一个
+                },
+            }
+        });
+
+        new Vue({
+            el: '#test2',
+            data: {
+                items: [1,2,3,4,5,6,7,8,9],
+                nextNum: 10
+            },
+            methods: {
+                randomIndex() {         // 0.9*9 = 8
+                    return Math.floor(Math.random() * this.items.length); // 位置随机
+                },
+                add() {
+                    this.items.splice(this.randomIndex(), 0, this.nextNum++); // 随机添加一个进来
+                },
+                remove() {
+                    this.items.splice(this.randomIndex(), 1) // 随机删除一个
+                },
+            }
+        });
+
+        new Vue({
+            el: "#test3",
+            data: {
+                query: '',
+                items: [
+                    {msg: 'aab张三'},
+                    {msg: 'acb李四'},
+                    {msg: 'aca王五'},
+                    {msg: 'acc赵六'}
+                ]
+            },
+            computed: {
+                computedItems() { // 根据输入内容筛选列表
+                    const vm = this;
+                    return this.items.filter(function (item) {
+                        return item.msg.toLowerCase().indexOf(vm.query.toLowerCase()) !== -1;
+                    });
+                }
+            },
+            methods: {
+                beforeEnter(el) {
+                    el.style.opacity = 0;
+                    el.style.height = 0;
+                },
+                enter(el, done) { // enter leave必须指定done
+                    var delay = el.dataset.index * 150;
+                    setTimeout(function () {
+                        Velocity(el, {opacity:1,height:'1.6em'}, {complete:done});
+                    }, delay)
+                },
+                leave(el, done) {
+                    var delay = el.dataset.index * 150;
+                    setTimeout(function () {
+                        Velocity(el, {opacity:0,height:0}, {complete:done});
+                    }, delay)
+                }
+            }
+        });
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/vue.min.js"></script>
+</head>
+<body>
+    <!--
+    全局混合
+    也可以全局注册混合对象。 注意使用！ 一旦使用全局混合对象，将会影响到 所有 之后创建的 Vue 实例。使用恰当时，可以为自定义对象注入处理逻辑。
+    -->
+    <!--
+    谨慎使用全局混合对象，因为会影响到每个单独创建的 Vue 实例（包括第三方模板）。
+    大多数情况下，只应当应用于自定义选项，就像上面示例一样。 也可以将其用作 Plugins 以避免产生重复应用
+    -->
+
+    <!--
+    自定义选项混合策略*****************************************
+        自定义选项将使用默认策略，即简单地覆盖已有值。 如果想让自定义选项以自定义逻辑混合，可以向 Vue.config.optionMergeStrategies 添加一个函数：
+        Vue.config.optionMergeStrategies.myOption = function (toVal, fromVal) {
+          // return mergedVal
+        }
+        对于大多数对象选项，可以使用 methods 的合并策略:
+        var strategies = Vue.config.optionMergeStrategies
+        strategies.myOption = strategies.methods
+    -->
+
+    <script>
+        Vue.mixin({
+            created() {
+                let myOption = this.$options.myOption;
+                if( myOption ) { // 如果存在
+                    console.log( myOption );
+                };
+            }
+        });
+        new Vue({
+           myOption: 'hello!'
+        });
+        new Vue({
+            myOption: '另一个Vue实例'
+        })
+    </script>
+</body>
+</html>

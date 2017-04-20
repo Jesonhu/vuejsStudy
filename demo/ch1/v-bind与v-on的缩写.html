@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>v-bind与v-on的缩写</title>
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <script src="../../js/vue.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <ul class="pagination">
+            <!--v-bind 未缩写-->
+            <li v-for="n in pageCount" v-bind:class="activeNumber === n?'active':''">
+                <a href="">{{n}}</a>
+            </li>
+            <br> <br>
+            <!--v-bind 缩写-->
+            <li v-for="n in pageCount" :class="activeNumber === n?'active':''">
+                <a href="">{{n}}</a>
+            </li>
+        </ul>
+    </div>
+
+    <div id="app2">
+        <p><input type="text" v-model="str"></p>
+        <p>
+            <!--v-on 未缩写-->
+            <button v-on:click="greet">Greet</button>
+            <!--v-on 缩写-->
+            <button @click="greet">Greet缩写</button>
+        </p>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                activeNumber: 1,
+                pageCount: 10
+            }
+        });
+
+        var app2 = new Vue({
+           el: '#app2',
+           data: {
+               str: '这是内容'
+           },
+           methods: {
+               greet: function(){
+                  alert(this.str);
+               }
+           }
+        });
+    </script>
+</body>
+</html>

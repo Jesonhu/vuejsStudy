@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/vue.min.js"></script>
+</head>
+<body>
+    <!--构成组件
+        组件意味着协同工作，通常父子组件会是这样的关系：组件 A 在它的模版中使用了组件 B 。
+        它们之间必然需要相互通信：父A组件要给子组件传递数据(pass props)，子组件B需要将它内部发生的事情告知给父组件(emit events)。
+        然而，在一个良好定义的接口中尽可能将父子组件解耦是很重要的。
+        这保证了每个组件可以在相对隔离的环境中书写和理解，也大幅提高了组件的可维护性和可重用性。
+        在 Vue.js 中，父子组件的关系可以总结为 props down, events up 。
+        父组件通过 props 向下传递数据给子组件，子组件通过 events 给父组件发送消息。看看它们是怎么工作的。-->
+    <!--
+    使用 Prop 传递数据
+    组件实例的作用域是孤立的。这意味着不能(也不应该)在子组件的模板内直接引用父组件的数据。要让子组件使用父组件的数据，我们需要通过子组件的props选项。
+    子组件要显式地用 props 选项声明它期待获得的数据：
+    -->
+    <!--HTML 特性是不区分大小写的。所以，当使用的不是字符串模版，camelCased (驼峰式) 命名的 prop 需要转换为相对应的 kebab-case (短横线隔开式) 命名：
+    字符串模板属性可以使用驼峰式 , 使用组件的时候的时候驼峰式要改成'-'式-->
+    <div id="test1">
+        <!--strMsg="你好" 不能使用-->
+        <my-component message="hellossss" str-msg="你好"></my-component>
+    </div>
+
+    <!--动态 Prop
+    在模板中，要动态地绑定父组件的数据到子模板的props，与绑定到任何普通的HTML特性相类似，就是用 v-bind。每当父组件的数据变化时，该变化也会传导给子组件：-->
+    <div id="test2">
+        <input type="text" v-model="parentMsg1">
+        <input type="number" v-model="parentMsg2">
+        <!-- 不使用 v-bind传递数据子组件不能接收通过属性传递过来的数据 -->
+        <change message1="parentMsg1" :message2="parentMsg2"></change>
+    </div>
+
+    <!-- 字面量语法 vs 动态语法
+    初学者常犯的一个错误是使用字面量语法传递数值
+    它是一个字面 prop ，它的值是字符串 "1" 而不是number。如果想传递一个实际的number，需要使用 v-bind ，从而让它的值被当作 JavaScript 表达式计算：
+    传递实际的 number
+    <comp v-bind:some-prop="1"></comp>
+    -->
+
+    <!--
+    prop 是单向绑定的：当父组件的属性变化时，将传导给子组件，但是不会反过来。这是为了防止子组件无意修改了父组件的状态——这会让应用的数据流难以理解。
+    另外，每次父组件更新时，子组件的所有 prop 都会更新为最新值。这意味着你不应该在子组件内部改变 prop 。如果你这么做了，Vue 会在控制台给出警告。
+    为什么我们会有修改prop中数据的冲动呢？通常是这两种原因：
+    prop 作为初始值传入后，子组件想把它当作局部数据来用；
+    prop 作为初始值传入，由子组件处理成其它数据输出。
+    -->
+    <!--这两种原因，正确的应对方式是-->
+    <!--定义一个局部变量，并用 prop 的值初始化它：
+    props: ['initialCounter'],
+    data: function () {
+        return { counter: this.initialCounter }  // 局部变量counter保存父组件prop传递initialCounter的
+    }
+
+    定义一个计算属性，处理 prop 的值并返回。
+    props: ['size'],
+    computed: {
+      normalizedSize: function () {
+        return this.size.trim().toLowerCase()
+      }
+    }
+    注意在 JavaScript 中对象和数组是引用类型，指向同一个内存空间，如果 prop 是一个对象或数组，在子组件内部改变它会影响父组件的状态。
+    -->
+
+    <!--Prop 验证
+    我们可以为组件的 props 指定验证规格。如果传入的数据不符合规格，Vue 会发出警告。当组件给其他人使用时，这很有用。
+    要指定验证规格，需要用对象的形式，而不能用字符串数组：
+
+    Vue.component('example', {
+      props: {
+        // 基础类型检测 （`null` 意思是任何类型都可以）
+        propA: Number,
+        // 多种类型
+        propB: [String, Number],
+        // 必传且是字符串
+        propC: {
+          type: String,
+          required: true
+        },
+        // 数字，有默认值
+        propD: {
+          type: Number,
+          default: 100
+        },
+        // 数组／对象的默认值应当由一个工厂函数返回
+        propE: {
+          type: Object,
+          default: function () {
+            return { message: 'hello' }
+          }
+        },
+        // 自定义验证函数
+        propF: {
+          validator: function (value) {
+            return value > 10
+          }
+        }
+      }
+    })
+
+    type 可以是下面原生构造器：
+    String
+    Number
+    Boolean
+    Function
+    Object
+    Array
+    type 也可以是一个自定义构造器函数，使用 instanceof 检测。
+    当 prop 验证失败，Vue会在抛出警告 (如果使用的是开发版本)
+    -->
+
+
+
+    <script>
+        // 注册组件 并接收通过属性传递过来的数据
+        Vue.component('myComponent', {
+           template: '<span>{{message}},{{strMsg}}</span>',
+           props: ['message', 'strMsg']
+        });
+        new Vue({
+            el: '#test1'
+        });
+
+        Vue.component('change', {
+            props: ['message1', 'message2'],
+            template: '<span>{{message1}}  {{message2}}</span>'
+        });
+        new Vue({
+            el: '#test2',
+            data: {
+                parentMsg1: '',
+                parentMsg2: ''
+            }
+        });
+    </script>
+</body>
+</html>

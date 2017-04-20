@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/vue.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+</head>
+    <body>
+        <!--v-else-if-->
+        <!--2.1.0新增：v-else-if，顾名思义，充当 v-if 的“else-if 块”。可以链式地使用多次：
+        类似于 v-else，v-else-if 必须紧跟在 v-if 或者 v-else-if 元素之后。-->
+        <div class="test1">
+            <button @click="{type==='A'}">显示A</button>
+            <button @click="type==='B'">显示B</button>
+            <button @click="type==='C'">显示C</button>
+            <div v-if="type === 'A'">
+                A
+            </div>
+            <div v-else-if="type === 'B'">
+                B
+            </div>
+            <div v-else-if="type === 'C'">
+                C
+            </div>
+            <div v-else>
+                Not A/B/C
+            </div>
+        </div>
+
+        <script>
+            new Vue({
+                el: '.test1',
+                data: {
+                    type: 'B'
+                }
+            });
+        </script>
+    </body>
+</html>

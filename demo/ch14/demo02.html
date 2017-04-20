@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/vue.min.js"></script>
+</head>
+<body>
+    <!--使用js代替模板功能*************
+    v-if and v-for
+    由于使用原生的 JavaScript 来实现某些东西很简单，Vue 的 render 函数没有提供专用的 API。比如， template 中的 v-if 和 v-for:
+    <ul v-if="items.length">
+      <li v-for="item in items">{{ item.name }}</li>
+    </ul>
+    <p v-else>No items found.</p>
+
+    render改写：
+        render(createElement) {
+                if (this.items.length) { // 显示ul
+                    return createElement('ul', this.items.map(function (item) { // this.items都执行map方法
+                        return createElement('li', item.name); // 创建节点和节点的内容
+                    }));
+                } else {
+                    return createElement('p', 'No items found.');
+                }
+            };
+    -->
+
+    <!-- v-model 自己实现v-model功能**************************
+        render(creatElement) {
+            var self = this;
+            return creatElement('input', {
+                domProps: { // <input value=""/>, DOM 属性
+                    value: self.value
+                },
+                on: {
+                    input(ev) {
+                        self.value = ev.target.value;
+                    }
+                }
+            })
+        }
+    -->
+
+    <!-- render 实现 事件&按键修饰符***************************
+        修饰符    前缀
+        .capture !
+        .once    ~
+        .capture.once
+        或者 .once.capture  都是 ~!
+
+        eg:
+        on: {
+            '!click': this.doOne,
+            '~keyup': this.doTwo,
+            '~!mouseover': this.doThree
+        }
+    -->
+
+    <!--
+    slots **********************************
+    你可以从this.$slots获取VNodes列表中的静态内容:
+    render: function (createElement) {
+      // <div><slot></slot></div>
+      return createElement('div', this.$slots.default); // this.$slots.default相当于<slot></slot>
+    }
+
+    render: function (createElement) {
+      // <div><slot :text="msg"></slot></div>
+      return createElement('div', [
+        this.$scopedSlots.default({
+          text: this.msg // 指定text的内容
+        })
+      ])
+    }
+
+      render (createElement) {
+          return createElement('div', [
+            createElement('child', {
+              // pass scopedSlots in the data object
+              // in the form of { name: props => VNode | Array<VNode> }
+              scopedSlots: {
+                default: function (props) {
+                  return createElement('span', props.text)
+                }
+              }
+            })
+          ])
+      }
+    -->
+
+    <!--
+    JSX***************************************
+    如果你写了很多 render 函数，可能会觉得痛苦：
+    createElement(
+      'anchored-heading', {
+        props: {
+          level: 1
+        }
+      }, [
+        createElement('span', 'Hello'),
+        ' world!'
+      ]
+    )
+    特别是模板如此简单的情况下：
+    <div id="demo">
+        <anchored-heading :level="1">
+          <span>Hello</span> world!
+        </anchored-heading>
+    </div>
+
+    这就是会有一个 Babel plugin 插件，用于在 Vue 中使用 JSX 语法的原因，它可以让我们回到于更接近模板的语法上。
+    import AnchoredHeading from './AnchoredHeading.vue'
+    new Vue({
+      el: '#demo',
+      render (h) {
+        return (
+          <AnchoredHeading level={1}>
+            <span>Hello</span> world!
+          </AnchoredHeading>
+        )
+      }
+    })
+
+    将 h 作为 createElement 的别名是 Vue 生态系统中的一个通用惯例，实际上也是 JSX 所要求的，如果在作用域中 h 失去作用， 在应用中会触发报错。
+    -->
+
+    <!--
+    函数化组件*********************************************
+    之前创建的锚点标题组件是比较简单，没有管理或者监听任何传递给他的状态，也没有生命周期方法。它只是一个接收参数的函数。
+    在这个例子中，我们标记组件为 functional(功能的)， 这意味它是无状态（没有 data），无实例（没有 this 上下文）。
+
+    一个 函数化组件 就像这样：
+    Vue.component('my-component', {
+      functional: true,
+      // 为了弥补缺少的实例
+      // 提供第二个参数作为上下文
+      render: function (createElement, context) {
+        // ...
+      },
+      // Props 可选
+      props: {
+        // ...
+      }
+    })
+
+    组件需要的一切都是通过上下文传递，包括：
+        props: 提供props 的对象
+        children: VNode 子节点的数组
+        slots: slots 对象
+        data: 传递给组件的 data 对象
+        parent: 对父组件的引用
+    在添加 functional: true 之后，锚点标题组件的 render 函数之间简单更新增加 context 参数，
+    this.$slots.default 更新为 context.children，之后this.level 更新为 context.props.level。
+    因为函数化组件只是一个函数，所以渲染开销也低很多。在作为包装组件时它们也同样非常有用，比如，当你需要做这些时：
+    程序化地在多个组件中选择一个
+    在将 children, props, data 传递给子组件之前操作它们。
+
+    下面是一个依赖传入 props 的值的 smart-list 组件例子，它能代表更多具体的组件：
+    var EmptyList = { /* ... */ }
+    var TableList = { /* ... */ }
+    var OrderedList = { /* ... */ }
+    var UnorderedList = { /* ... */ }
+    Vue.component('smart-list', {
+      functional: true, // 该组件被标记为功能函数
+      render: function (createElement, context) { // 可以传递第二个参数 context
+        function appropriateListComponent () {
+          var items = context.props.items
+          if (items.length === 0)           return EmptyList
+          if (typeof items[0] === 'object') return TableList
+          if (context.props.isOrdered)      return OrderedList
+          return UnorderedList
+        };
+        return createElement(appropriateListComponent(),context.data,context.children);
+      },
+      props: {
+        items: {
+          type: Array,
+          required: true
+        },
+        isOrdered: Boolean
+      }
+    })
+    -->
+
+    <!--
+    slots() 和 children 对比
+    你可能想知道为什么同时需要 slots() 和 children。
+    slots().default (<slot></slot>)不是和 children 类似的吗？在一些场景中，是这样，
+    但是如果是函数式组件和下面这样的 children 呢？
+    <my-functional-component>
+      <p slot="foo">
+        first
+      </p>
+      <p>second</p>
+    </my-functional-component>
+    对于这个组件，children 会给你两个段落标签，而 slots().default 只会传递第二个匿名段落标签，slots().foo 会传递第一个具名段落标签。
+    同时拥有 children 和 slots() ，因此你可以选择让组件通过 slot() 系统分发或者简单的通过 children 接收，让其他组件去
+    -->
+
+    <!--
+    模板编译**************************************
+    你可能有兴趣知道，Vue 的模板实际是编译成了 render 函数。
+    这是一个实现细节，通常不需要关心，但如果你想看看模板的功能是怎样被编译的，你会发现会非常有趣
+    -->
+    <script>
+        let xx = {
+
+
+
+        }
+    </script>
+</body>
+</html>

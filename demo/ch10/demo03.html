@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/vue.min.js"></script>
+</head>
+<body>
+    <!--自定义事件
+    我们知道，父组件是使用 props 传递数据给子组件，但如果子组件要把数据传递回去，应该怎样做？那就是自定义事件！
+
+    使用 v-on 绑定自定义事件
+    每个 Vue 实例都实现了事件接口(Events interface)，即：
+    使用 $on(eventName) 监听事件
+    使用 $emit(eventName) 触发事件
+    Vue的事件系统分离自浏览器的EventTarget API。尽管它们的运行类似，但是$on 和 $emit 不是addEventListener 和 dispatchEvent 的别名。
+    另外，父组件可以在使用子组件的地方直接用 v-on 来监听子组件触发的事件。
+    -->
+    <!--不能用$on侦听子组件抛出的事件，而必须在模板里直接用v-on绑定-->
+    <div id="test1">
+        {{total}}
+        <my v-on:increment="incrementTotal"></my>
+    </div>
+
+    <!--给组件绑定原生事件
+        有时候，你可能想在某个组件的根元素上监听一个原生事件。可以使用 .native 修饰 v-on
+        <my-component v-on:click.native="doTheThing"></my-component>
+    -->
+
+    <!-- 使用自定义事件的表单输入组件
+     自定义事件可以用来创建自定义的表单输入组件，使用 v-model 来进行数据双向绑定
+     <input v-model="something"> 是下面的语法糖
+     <input v-bind:value="something" v-on:input="something = $event.target.value">
+     在组件中使用时，它相当于下面的简写
+     <custom-input v-bind:value="something" v-on:input="something = arguments[0]"></custom-input>
+     要让组件的 v-model 生效，它必须：
+        接受一个 value 属性
+        在有新的 value 时触发 input 事件
+     -->
+    <div id="test2">
+        {{price}}
+        <money-input v-model="price"></money-input>
+    </div>
+
+    <!--非父子组件通信
+        有时候两个组件也需要通信(非父子关系)。在简单的场景下，可以使用一个空的 Vue 实例作为中央事件总线：
+        var bus = new Vue()
+        // 触发组件 A 中的事件
+        bus.$emit('id-selected', 1)
+        // 在组件 B 创建的钩子中监听事件
+        bus.$on('id-selected', function (id) {
+          // ...
+        })
+        在复杂的情况下，我们应该考虑使用专门的 状态管理模式.
+    -->
+
+    <script>
+        /*子组件已经和它外部完全解耦了。它所做的只是报告自己的内部事件，至于父组件是否关心则与它无关*/
+        Vue.component('my', {
+            template: '<button v-on:click="increment">{{counter}}</button>',
+            data() {
+                return {
+                    counter: 0 // 局部变量
+                }
+            },
+            methods: {
+                increment() {
+                    this.counter++;
+                    this.$emit('increment'); // 告诉父组件通过prop传递给我的数据变化了
+                }
+            }
+        });
+        new Vue({
+            el: '#test1',
+            data: {
+                total: 0
+            },
+            methods: {
+                incrementTotal() {
+                    this.total++; // 父组件表示:ok 我就显示你改变的情况吧 去掉这一句表示父组件不关心子组件的变化
+                }
+            }
+        });
+
+        Vue.component('money-input', {
+            template:'\
+                    <span>\
+                      $\
+                      <input\
+                        ref="input"\
+                        v-bind:value="value"\
+                        v-on:input="updateValue($event.target.value)"\
+                      >\
+                    </span>\
+                    ',
+            props: ['value'],
+            methods: {
+                updateValue(value) {
+                    let formateValue = value
+                    .trim() // 删除两边的空格
+                    .slice(0, value.indexOf('.') + 3); // 保留两位小数
+                    // 如果值不统一，手动覆盖以保持一致
+                    if (formateValue !== value) {
+                        this.$refs.input.value = formateValue; // ref='input'
+                    };
+                    // 通过input 发出更改请求
+                    this.$emit('input', Number(formateValue));
+
+                }
+            }
+        });
+        new Vue({
+            el: '#test2',
+            data: {
+                price: 0
+            }
+        });
+    </script>
+</body>
+</html>
