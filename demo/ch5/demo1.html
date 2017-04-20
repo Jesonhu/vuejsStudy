@@ -20,7 +20,7 @@
     active 的更新将取决于数据属性 isActive 是否为真值 。-->
     <div id="test1" :class="{active: isActive}">123</div>
 
-    <!--我们也可以在对象中传入更多属性用来动态切换多个 class 。此外， v-bind:class 指令可以与普通的 class 属性共存-->
+    <!--我们也可以在对象中传入更多属性用来动态切换多个 class 。此外， v-bind:class 指令可以与普通的 class 属性共存(普通的在前面)-->
     <div id="test2" class="static" :class="{active:isActive,'text-danger':hasError}">456</div>
 
     <!--我们也可以在这里绑定返回对象的计算属性。这是一个常用且强大的模式-->
