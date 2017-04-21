@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/vuex/2.3.1/vuex.min.js"></script>
+</head>
+<body>
+    <!--Getters********************************** 可以认为是store的computed
+        有时候我们需要从 store 中的 state 中派生出一些状态，例如对列表进行过滤并计数：
+        computed: {
+          doneTodosCount () {
+            return this.$store.state.todos.filter(todo => todo.done).length
+                                       // 获取store.state对象 属性为todos进行筛选
+                                       // => 箭头函数的简写
+          }
+        }-->
+
+    <!--如果有多个组件需要用到此属性，我们要么复制这个函数，或者抽取到一个共享函数然后在多处导入它 —— 无论哪种方式都不是很理想。
+        Vuex 允许我们在 store 中定义『getters』（可以认为是 store 的计算属性）。Getters 接受 state 作为其第一个参数
+        const store = new Vuex.Store({
+          state: {
+            todos: [
+              { id: 1, text: '...', done: true },
+              { id: 2, text: '...', done: false }
+            ]
+          },
+          getters: { // 可以认为是store的computed
+            doneTodos: state => { // Getters 接受 state 作为其第一个参数
+              return state.todos.filter(todo => todo.done)
+            }
+          }
+        })
+
+        此时Getters 会暴露为 store.getters 对象：（实例使用的时候）
+        store.getters.doneTodos // -> [{ id: 1, text: '...', done: true }]
+        -->
+
+        <!--
+        Getters 也可以接受其他 getters 作为第二个参数：
+        getters: {
+          // ...
+          doneTodosCount: (state, getters) => {
+            return getters.doneTodos.length
+          }
+        }
+        store.getters.doneTodosCount // -> 1
+        -->
+
+        <!--
+        我们可以很容易地在任何组件中使用它：
+        computed: {
+          doneTodosCount () {
+            return this.$store.getters.doneTodosCount
+          }
+        }
+        -->
+
+        <!--
+        mapGetters 辅助函数***********************************store 中的 getters 映射到局部计算属性
+        mapGetters 辅助函数仅仅是将 store 中的 getters 映射到局部计算属性：
+
+        import { mapGetters } from 'vuex'
+
+        export default { // export一个匿名函数，import引用的时候可以自己命名
+          // ...
+          computed: {
+          // 使用对象展开运算符将 getters 混入 computed 对象中
+            ...mapGetters([
+              'doneTodosCount',
+              'anotherGetter',
+              // ...
+            ])
+          }
+        }
+        如果你想将一个 getter 属性另取一个名字，使用对象形式：
+
+        mapGetters({
+          // 映射 this.doneCount 为 store.getters.doneTodosCount
+          doneCount: 'doneTodosCount'
+        })-->
+
+</body>
+</html>
