@@ -78,12 +78,12 @@
             store,
             computed: {
                 count() {
-                    return store.state.count;
+                    return store.state.count; // 返回store中state的状态
                 }
             },
             methods: {
               add() {
-                  store.commit('addAction', 2)  // 触发 store中的add action
+                  store.commit('addAction', 2)  // 触发 store中的addAction action
               }
             }
         });
@@ -97,7 +97,7 @@
             },
             methods: {
                 add() {
-                    store.commit('addAction', 1)  // 触发 store中的add action
+                    store.commit('addAction', 1)  // 触发 store中的addAction action
                 }
             }
         });
@@ -111,8 +111,8 @@
         /*const Counter = {
             template: '<div>{{count}}</div>',
             computed: {
-                count() {
-                    return store.state.count;
+                count() { // 私有的数据
+                    return store.state.count; // 获取store中的state
                 }
             }
         }*/
@@ -145,9 +145,13 @@
             computed: mapState({
                         // 箭头函数可使代码更简练
                         count: state => state.count,
+                        相当于：
+                        count() {
+                           return store.state.count; 
+                        }
 
                     // 传字符串参数 'count' 等同于 `state => state.count`
-                    countAlias: 'count',
+                    countAlias: 'count', // countAlias总数的别名
 
             // 为了能够使用 `this` 获取局部状态，必须使用常规函数
                 countPlusLocalState (state) {
