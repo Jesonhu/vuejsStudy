@@ -1,0 +1,6 @@
+demo01.html // 注册全局组件-注册局部组件-组件标签写法-组件里data必须是函数-父子组件通信-组件data独立
+demo02.html // props传递数字-指定props类型-全局组件prop传递
+demo03.html // 父子组件通信详解-给组件绑定原生事件-v-model语法糖解释-非父子组件通信
+demo04.html // 使用slot派发内容-编译作用域-单个未命名slot-具名slot-作用域插槽scope="props"
+demo05.html // 动态组件-keep alive
+demo06.html // 编写可复用组件规则-子组件的索引ref-异步组件-组件命名约定-递归组件-组件间循环引用-内联模板-X-Templates-对低开销组件使用v-once
