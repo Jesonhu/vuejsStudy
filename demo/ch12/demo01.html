@@ -74,11 +74,24 @@
     -->
 
     <!--单元素/组件的过渡*********************************
-    Vue 提供了 transition 的封装组件，在下列情形中，可以给任何元素和组件添加 entering/leaving 过渡
+    Vue 提供了 transition 的封装组件，在下列情形中，可以给任何元素和组件添加 entering/leaving 过渡（必须有下面四个的逻辑，transition才有动画）
     条件渲染 （使用 v-if）
     条件展示 （使用 v-show）
     动态组件
-    组件根节点
+    组件根节点（路由）
+
+    xxx-enter  动画开始的时候
+    xxx-leave  动画结束的时候 结束0.00001时，通常可以不写
+    xxx-enter-acitive 开始到(结束)正常显示（xxx元素css指定的状态）
+    xxx-leave-acitive 正常显示到消失（结束） 
+
+    eg: 开始就为绿色，3s后变成黑色
+    .show-enter,.show-leave-active{ // 开始+结束状态有过渡效果
+        color:green;
+    }
+    .show-enter-active,.show-leave-active{
+        color:transition red 3s;
+    }
 
     当插入或删除包含在 transition 组件中的元素时，Vue 将会做以下处理：
     自动嗅探目标元素是否应用了 CSS 过渡或动画，如果是，在恰当的时机添加/删除 CSS 类名。
