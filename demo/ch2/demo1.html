@@ -60,14 +60,17 @@
                 a: 1,
                 b: 2
             },
+            beforeRouteEnter(to, from next){ // 最开始调用
+            
+            },
+            beforeCreate() {    // 在实例初始化之前，数据观测(data observer) 和 event/watcher 事件配置之前被调用。
+                console.log('beforeCreate'); // 实例被创建之前就执行
+            },
             created() { // 实例已经创建完成之后被调用。在这一步，实例已完成以下的配置：数据观测(data observer)，属性和方法的运算， watch/event 事件回调。
                         // 然而，挂载阶段还没开始，$el 属性目前不可见。
                 //this指向 vm实例
                 //console.log('我在created里面 a is:'+this.a); // dom被加载后就就执行
                 console.log('created');
-            },
-            beforeCreate() {    // 在实例初始化之后，数据观测(data observer) 和 event/watcher 事件配置之前被调用。
-                console.log('beforeCreate'); // 实例被创建之前就执行
             },
             beforeMount() { // 在挂载开始之前被调用:相关render函数首次被调用（服务器渲染期间不能被调用）
                 console.log('beforeMount');
